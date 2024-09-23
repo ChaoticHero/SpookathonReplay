@@ -1,36 +1,45 @@
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public Rigidbody rb;
+    public float forwardForce = 2000f;
+    public float sidewaysForce = 500f;
+    GameManager gameManager;
+    
+   
+    void Start()
+    {
+        gameManager = FindObjectOfType<GameManager>();
+    }
 
-	// This is a reference to the Rigidbody component called "rb"
-	public Rigidbody rb;
+    
+    void FixedUpdate()
+    {
+        rb.AddForce(0, 0, forwardForce * Time.deltaTime);
 
-	public float forwardForce = 2000f;  // Variable that determines the forward force
-	public float sidewaysForce = 500f;  // Variable that determines the sideways force
+        if ( Input.GetKey("d") ) 
+        {
+            
+            Command moveRight = new MoveRight(rb, sidewaysForce);
+            Invoker invoker = new Invoker();
+            invoker.SetCommand(moveRight);
+            invoker.ExecuteCommand();
+        }
+        if (Input.GetKey("a")) 
+        {
+            
+            Command moveLeft = new MoveLeft(rb, sidewaysForce);
+            Invoker invoker = new Invoker();
+            invoker.SetCommand(moveLeft);
+            invoker.ExecuteCommand();
+        }
 
-	// We marked this as "Fixed"Update because we
-	// are using it to mess with physics.
-	void FixedUpdate()
-	{
-		// Add a forward force
-		rb.AddForce(0, 0, forwardForce * Time.deltaTime);
-
-		if (Input.GetKey("d"))  // If the player is pressing the "d" key
-		{
-			// Add a force to the right
-			rb.AddForce(sidewaysForce * Time.deltaTime, 0, 0, ForceMode.VelocityChange);
-		}
-
-		if (Input.GetKey("a"))  // If the player is pressing the "a" key
-		{
-			// Add a force to the left
-			rb.AddForce(-sidewaysForce * Time.deltaTime, 0, 0, ForceMode.VelocityChange);
-		}
-
-		if (rb.position.y < -1f)
-		{
-			FindObjectOfType<GameManager>().EndGame();
-		}
-	}
+        if (rb.position.y < -1f)
+        {
+            FindObjectOfType<GameManager>().EndGame(null);
+        }
+    }
 }

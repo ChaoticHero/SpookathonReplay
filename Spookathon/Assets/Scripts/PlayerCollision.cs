@@ -1,20 +1,38 @@
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerCollision : MonoBehaviour
 {
+    public PlayerMovement movement;
 
-	public PlayerMovement movement;     // A reference to our PlayerMovement script
-	public GameManager gameManager;
-	// This function runs when we hit another object.
-	// We get information about the collision and call it "collisionInfo".
-	void OnCollisionEnter(Collision collisionInfo)
-	{
-		// We check if the object we collided with has a tag called "Obstacle".
-		if (collisionInfo.collider.tag == "Obstacle")
-		{
-			movement.enabled = false;   // Disable the players movement.
-			FindObjectOfType<GameManager>().EndGame();
-		}
-	}
+    public delegate void HitObstacle(Collision collisionInfo);
+    public static event HitObstacle OnHitObstacle;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    void OnCollisionEnter(Collision collisionInfo)
+    {
+        if (collisionInfo.collider.tag == "Obstacle")
+        {
+            //Debug.Log("We hit an obstacle!");
+            if (OnHitObstacle != null)
+            {
+                OnHitObstacle(collisionInfo);
+            }
+            //movement.enabled = false;
+            //FindObjectOfType<GameManager>().EndGame();
+        }
+    }
 
 }
